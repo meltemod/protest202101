@@ -26,3 +26,7 @@ datetime=gsub(':','',datetime)
 
 tt=get_trends('istanbul')
 
+filename=paste0('tt_istanbul',datetime,'.csv')
+loc_export=file.path(loc_data,'trending_topic')
+
+write_csv(tt,file.path(loc_export,filename))
