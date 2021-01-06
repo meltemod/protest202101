@@ -10,3 +10,7 @@ if(dir.exists(loc_data)==FALSE){dir.create(loc)} #create data_loc if does not ex
 loc_wf = file.path(bucket,'workflow')
 if(dir.exists(loc_wf)==FALSE){dir.create(loc_wf)} #create data_loc if does not exist
 save.image('00_repo_folder_structure.RData')
+#open key location
+loc_key = file.path(bucket,'key')
+if(dir.exists(loc_key)==FALSE){dir.create(loc_key)} #create data_loc if does not exist
+save.image('00_repo_folder_structure.RData')
