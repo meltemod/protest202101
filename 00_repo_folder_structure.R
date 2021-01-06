@@ -10,4 +10,4 @@ save.image('00_repository_folder_structure.RData')
 #open workflow location
 loc_wf = file.path(bucket,'workflow')
 if(dir.exists(loc_wf)==FALSE){dir.create(loc_wf)} #create data_loc if does not exist
-save.image('00_repository_folder_structure.RData')
+save.image('00_repo_folder_structure.RData')
