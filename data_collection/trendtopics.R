@@ -1,5 +1,5 @@
 #---------------------
-# Data collection
+# Trending topic data collection, hourly
 #
 #
 #---------------------
