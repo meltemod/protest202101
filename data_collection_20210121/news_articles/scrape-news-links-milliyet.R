@@ -1,4 +1,4 @@
-#milliyet-news-search
+#milliyet-news-links-search
 newspaper='milliyet'
 
 #0. prep
@@ -14,7 +14,7 @@ library(data.table)
 library(tidyverse)
 
 #set export location
-loc_news='E://data/protest202101/data/news_articles'
+loc_news='E://data/protest202101/data/news_articles/links'
 if(dir.exists(loc_news)==FALSE){dir.create(loc_news)}
 if(dir.exists(file.path(loc_news,newspaper))==FALSE){dir.create(file.path(loc_news,newspaper))}
 date=Sys.time()
@@ -81,4 +81,4 @@ df[,date:=as.numeric(date)]
 df=df[date>20201231]
 
 #3. save data
-fwrite(df,file.path(loc_export,paste0(newspaper,'_collected_on_',date,'.csv')))
+fwrite(df,file.path(loc_export,paste0(newspaper,'_links_collected_on_',date,'.csv')))
