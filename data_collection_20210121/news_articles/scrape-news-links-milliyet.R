@@ -1,5 +1,6 @@
 #milliyet-news-links-search
 newspaper='milliyet'
+start_on='2020-12-31'
 
 #0. prep
 bucket_url="https://www.milliyet.com.tr"
@@ -13,14 +14,33 @@ Sys.setlocale(category = "LC_ALL", locale = lang)
 library(data.table)
 library(tidyverse)
 
-#set export location
-loc_news='E://data/protest202101/data/news_articles/links'
-if(dir.exists(loc_news)==FALSE){dir.create(loc_news)}
-if(dir.exists(file.path(loc_news,newspaper))==FALSE){dir.create(file.path(loc_news,newspaper))}
+#set newspaper location
+#for links
+loc_links='E://data/protest202101/data/news_articles/links'
+if(dir.exists(loc_links)==FALSE){dir.create(loc_links)}
+if(dir.exists(file.path(loc_links,newspaper))==FALSE){dir.create(file.path(loc_links,newspaper))}
+#for news content (to be used later)
+loc_content='E://data/protest202101/data/news_articles/content'
+if(dir.exists(loc_content)==FALSE){dir.create(loc_content)}
+if(dir.exists(file.path(loc_content,newspaper))==FALSE){dir.create(file.path(loc_content,newspaper))}
+
+#CHECK WHETHER THERE ARE ANY FOLDERS SAVED. IF SO, CHOOSE THE LATEST DATE-1
+#AS THE NEWS ARTICLE LIMIT
+collected=dir(file.path(loc_content,newspaper))
+if(length(collected)>0){
+  trim_date=as.character(as.Date(collected[length(collected)])-1)
+}else{
+  trim_date=start_on
+}
+
+#set export location and folder name
 date=Sys.time()
 date=as.character(as.Date(date))
-loc_export=file.path(loc_news,newspaper,date)
+loc_export=file.path(loc_links,newspaper,date)
 if(dir.exists(loc_export)==FALSE){dir.create(loc_export)}
+
+
+dir(file.path(loc_links,newspaper))
 
 
 #1. create function (also loads required packages)
@@ -57,7 +77,7 @@ scrape_milliyet=function(link){
     html_nodes(".news__date") %>% 
     html_text()
   
-  date = format(as.POSIXct(strptime(date, "%d.%m.%Y")),'%Y%m%d')
+  date = format(as.POSIXct(strptime(date, "%d.%m.%Y")),'%Y-%m-%d')
   
   #create df
   result=tibble(title=title,link=link,text_short=text_short,date=date)
@@ -77,8 +97,11 @@ for ( i in 1:15){
 }
 
 df=rbindlist(datalist)
-df[,date:=as.numeric(date)]
-df=df[date>20201231]
+#trim the news that are before the trim date
+if(is.null(trim_date)==FALSE){
+  df=df[date>trim_date]
+}
+
 
 #3. save data
 fwrite(df,file.path(loc_export,paste0(newspaper,'_links_collected_on_',date,'.csv')))
