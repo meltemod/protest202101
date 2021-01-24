@@ -104,4 +104,4 @@ if(is.null(trim_date)==FALSE){
 
 
 #3. save data
-fwrite(df,file.path(loc_export,paste0(newspaper,'_links_collected_on_',date,'.csv')))
+write_csv(df,file.path(loc_export,paste0(newspaper,'_links_collected_on_',date,'.csv')))

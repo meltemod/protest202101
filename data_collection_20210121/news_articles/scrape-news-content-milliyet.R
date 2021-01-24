@@ -115,7 +115,7 @@ for(f in folders){
   #save the data
   print(paste('saving data for folder ',f,'...'))
   flush.console()
-  fwrite(df_content,file.path(loc_export,f,paste0(newspaper,'_content_collected_on_',f,'.csv')))
+  write_csv(df_content,file.path(loc_export,f,paste0(newspaper,'_content_collected_on_',f,'.csv')))
   print('done.')
   flush.console()
   
