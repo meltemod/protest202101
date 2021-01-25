@@ -46,7 +46,16 @@ query= c('KayyumRektörİstemiyoruz',        #most popular
          'DirenBoğaziçi',                  #most popular about resistance/protest
          'MelihBulu',                      #formal name of rector for general opinion gathering
          'BoğaziçiÜniversitesi',           #formal name of the university for general opinion gathering
-         'BogaziciUniversity')             #formal name of the university for general opinion gathering, in English
+         'BogaziciUniversity',             #formal name of the university for general opinion gathering, in English
+         'ÜniversitenİçinSözSende')        #added in 24 Jan, people share their demands under this hashtag.   
+
+query_date=c(
+  rep('2020-01-21',10),'2020-01-24'
+)
+
+#write hahstag list
+hashtag=tibble(hashtag=query,added_to_query=query_date)
+write_csv(hashtag,file.path(bucket,export_loc,'hashtags.csv'))
 
 #get upper/lower case and non-turkish letter versions of the query
 query = c(query, tolower(query),tureng(query),turtwit(query),
@@ -56,4 +65,5 @@ query = unique(query)
 query = paste0('#',query)
 query=as_tibble(query)
 write_csv(query,file.path(bucket,export_loc,'query.csv'))
+
 

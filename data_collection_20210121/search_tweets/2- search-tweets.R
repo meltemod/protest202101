@@ -6,13 +6,12 @@
 #------------------------
 
 # 0. prep work
-#set query division (1,2,or 3)
-division=1
-divisions=list(c(1,15),c(16,30),c(31,46))
+#set query division (1,2,3 or 4)
+division=5
 
 #set app
 apps=c('meltemodabas001','modabas001')
-app=2 #which app?
+app=1 #which app?
 
 #set folder locations
 loc_import='data/search_tweets_20210121'
@@ -54,11 +53,19 @@ if(dir.exists(loc_export_sub)==FALSE){
   dir.create(loc_export_sub)
 }
 
-
 #3. select the subset of hashtags to collect
-div=divisions[[division]]
 query_df=read_csv(file.path(bucket,loc_export,'query.csv'))
-query=query_df$value[div[1]:div[2]]
+#divide query to 12 word chunks
+divisions=list()
+a=1
+for(d in 1:ceiling(nrow(query_df)/12)){
+  divisions[[d]]=c(a:(a+11))
+  a=a+12
+}
+div=divisions[[division]]
+
+query=query_df$value[div]
+query=query[is.na(query)==FALSE]
 query=paste(query,collapse=' OR ')
 
 #4. set token
