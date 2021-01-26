@@ -47,10 +47,12 @@ query= c('KayyumRektörİstemiyoruz',        #most popular
          'MelihBulu',                      #formal name of rector for general opinion gathering
          'BoğaziçiÜniversitesi',           #formal name of the university for general opinion gathering
          'BogaziciUniversity',             #formal name of the university for general opinion gathering, in English
-         'ÜniversitenİçinSözSende')        #added in 24 Jan, people share their demands under this hashtag.   
+         'ÜniversitenİçinSözSende',        #added in 24 Jan, people share their demands under this hashtag.   
+         'KabulEdemem')                    #added in 26 Jan, people share their answer to "what the don't accept" under this hashtag.
+
 
 query_date=c(
-  rep('2020-01-21',10),'2020-01-24'
+  rep('2020-01-21',10),'2020-01-24','2020-01-26'
 )
 
 #write hahstag list
