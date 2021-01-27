@@ -9,7 +9,7 @@
 # 0. prep work
 
 #folder date:
-date='2021-01-21'
+date='2021-01-26'
 
 #set folder locations
 computers=c('home_desktop','carbonate')

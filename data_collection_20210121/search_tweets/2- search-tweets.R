@@ -7,7 +7,7 @@
 
 # 0. prep work
 #set query division (1,2,3 or 4)
-division=5
+division=3
 
 #set app
 apps=c('meltemodabas001','modabas001')

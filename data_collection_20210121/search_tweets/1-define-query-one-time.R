@@ -11,6 +11,7 @@
 # 0. prep work
 
 # Load libraries
+library(tidyverse)
 
 #set folder locations
 computers=c('home_desktop','carbonate')
