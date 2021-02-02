@@ -48,12 +48,18 @@ query= c('KayyumRektörİstemiyoruz',        #most popular
          'MelihBulu',                      #formal name of rector for general opinion gathering
          'BoğaziçiÜniversitesi',           #formal name of the university for general opinion gathering
          'BogaziciUniversity',             #formal name of the university for general opinion gathering, in English
-         'ÜniversitenİçinSözSende',        #added in 24 Jan, people share their demands under this hashtag.   
-         'KabulEdemem')                    #added in 26 Jan, people share their answer to "what the don't accept" under this hashtag.
+         'ÜniversitenİçinSözSende',        #added on 24 Jan, people share their demands under this hashtag.   
+         'KabulEdemem',                    #added on 26 Jan, people share their answer to "what the don't accept" under this hashtag.
+         "BoğaziçiSusmayacak",             #added on 29 Jan, people share their concerns as a response to detentions
+         "BoğaziçiTeslimolmayacak",        #added on 29 Jan, people share their concerns as a response to detentions
+         "BundanSonrasıBizde",             #added on 31 Jan, people share their concerns as a response to the arrest of two LGBTQI+ students
+         "#BoğaziçiAblukada",              #added on 1 Feb, hashtag refers to police presence around the campus
+         "#AşağıBakmayacağız")             #added on 1 Feb, hashtag refers to police presence around the campus
 
 
 query_date=c(
-  rep('2020-01-21',10),'2020-01-24','2020-01-26'
+  rep('2020-01-21',10),'2020-01-24','2020-01-26',
+  '2020-01-29','2020-01-29','2020-01-31','2020-02-01','2020-02-01'
 )
 
 #write hahstag list
