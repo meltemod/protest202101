@@ -17,11 +17,7 @@ loc_function='functions'
 loc_import= 'data/search_tweets_20210121/get_friends'
 loc_export= 'data/search_tweets_20210121/get_friends'
 
-#create subfolder to save
-date=str_extract(files,'[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
-date=max(date)
-loc_export_sub=file.path(bucket,loc_export,date)
-if(dir.exists(loc_export_sub)==FALSE){dir.create(loc_export_sub)}
+
 
 #load libraries
 library(tidyverse)
@@ -47,6 +43,12 @@ for (f in files){
 }
 df=rbindlist(datalist)
 
+#create subfolder to save
+date=str_extract(files,'[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+date=max(date)
+loc_export_sub=file.path(bucket,loc_export,date)
+if(dir.exists(loc_export_sub)==FALSE){dir.create(loc_export_sub)}
+
 #get users with highest number of friend count
 tmp=df[,max(friends_count),by=screen_name]
 setnames(tmp,'V1','friends_count')
@@ -56,11 +58,6 @@ tmp=merge(tmp,tmp2)
 tmp3=unique(df[,.(user_id,screen_name,account_created_at)])
 df=merge(tmp,tmp3)
 rm(tmp,tmp2,tmp3)
-
-#divide the data into two: people with less than 4K friends, and others
-df1=df[friends_count<4000]
-df2=df[friends_count>=4000]
-
 
 #authenticate
 key = read_csv(file.path(bucket,loc_key,"all_app_keys.csv"))
@@ -80,7 +77,7 @@ rate_limit_stop=function(check='get_friends'){
   if(rate_limit(check)$remaining==0){ #if this is true
     print(paste('Rate Limit:',round(rate_limit(check)$remaining,2)))
     print(paste('Rate Limit Reset in:',round(rate_limit(check)$reset,2),'minutes'))
-    sleep_for=round(rate_limit(check)$reset,2)+1
+    sleep_for=round(rate_limit(check)$reset,2)+.1
     print(paste('Sleeping for',sleep_for,' minutes.'))
     Sys.sleep(60*sleep_for)
     print(paste('Rate Limit:',round(rate_limit(check)$remaining,2)))
@@ -127,34 +124,14 @@ retrieve_get_friends=function(data){
   result
 }
 
-
-#collect data for people with less than 4K friends
+#collect data 
 datalist=list()
-collect=0
-count=0
-for(i in 1:nrow(df1)){
-  #rate limit check
-  rate_limit_stop(check='get_friends')
-  #collect
-  user=df1$screen_name[i] #set the username
-  datalist[[i]]=get_friends(user) #collect friends
-  print(paste('Friends list for',user,'is collected.', i,'out of', nrow(df1),'. Appname:',key$appname[1]))
-}
-df=rbindlist(datalist)
-
-filename=file.path(loc_export_sub,paste0("user-friends-upto-5K-",date,".csv"))
-fwrite(df,filename)
-
-
-#collect data for people with more than 4K friends
-datalist=list()
-rm(df)
-for(i in 1:nrow(df2)){
+for(i in 1:nrow(df)){
   #rate limit check
   rate_limit_stop(check='get_friends')
   #
-  user=df2$screen_name[i] #set the username
-  print(paste(user,',page 1.', i,'out of', nrow(df2),'. Appname:',key$appname[1]))
+  user=df$screen_name[i] #set the username
+  print(paste(user,',page 1.', i,'out of', nrow(df),'. Appname:',key$appname[1]))
   #create list for the user
   tmplist=list()
   #collect the first page
@@ -163,7 +140,7 @@ for(i in 1:nrow(df2)){
     #get the next cursor
     nc=as.integer64(next_cursor(tmplist[[1]]))
     #collect the next page, if exists.
-    number=ceiling(df2$friends_count[i]/5000)+10 #get loop number based on # followers available on df, add 10 to be safe
+    number=ceiling(df$friends_count[i]/5000)+10 #get loop number based on # followers available on df, add 10 to be safe
     for(j in 2:number){
       if(nc==0){next}else{
         #rate limit check
@@ -177,13 +154,14 @@ for(i in 1:nrow(df2)){
   }
   tmp=rbindlist(tmplist) #bind the data for user i
   datalist[[i]]=tmp #add to the full datalist
-  print(paste('Friends list for',user,'is collected.', i,'out of', nrow(df2),'. Appname:',key$appname[1]))
+  datalist[[i]]$collected_on=Sys.time()
+  print(paste('Friends list for',user,'is collected.', i,'out of', nrow(df),'. Appname:',key$appname[1]))
 }
 
 
 result=rbindlist(datalist)
 
-filename=file.path(loc_export_sub,paste0("user-friends-more-than-5K-",date,".csv"))
+filename=file.path(loc_export_sub,paste0("user-friends-",date,".csv"))
 fwrite(result,filename)
 
 
