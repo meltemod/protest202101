@@ -9,6 +9,13 @@ library(data.table)
 library(tidyverse)
 library(bit64)
 
+#set language
+#"" for default
+#"Turkish" for Turkish on Windows
+#"tr" for Turkish on Linux
+lang="Turkish" 
+Sys.setlocale(category = "LC_ALL", locale = lang)
+
 computers=c('home_desktop','carbonate')
 co=1 #which computer?
 buckets=c("E:\\data\\protest202101","/N/project/c19/protest202101")
@@ -31,17 +38,30 @@ files=files[grep('.csv',files)]
 datalist=list()
 a=1
 for(f in files){
-  datalist[[a]]=fread(f,select=c("user_id","screen_name","hashtags","followers_count","friends_count","account_created_at"))
-  datalist[[a]][,user_id:=as.integer64(user_id)]
+  datalist[[a]]=read_csv(f)%>%
+    select(c("user_id","screen_name","hashtags",
+                                            "followers_count","friends_count",
+                                            "account_created_at","created_at"))%>%
+    mutate(user_id=as.integer64(user_id))
   a=a+1
 }
 df=rbindlist(datalist)
 df=df[created_at>'2020-12-31']
-#remove polisimin yanindayim hashtags
-remove_polis=grep('olisimin',df$hashtags)
-df=df[!remove_polis,.(user_id,screen_name,friends_count,followers_count)]
-df=unique(df)
-setorder(df,screen_name)
+
+#limit tweets to those who have hashtags listed in the new query
+query_df=read_csv(file.path(bucket,'data/search_tweets_20210121','query.csv'))
+query=query_df$value
+query=gsub('#','',query)
+
+#filter tweetsayim hashtags
+df[,keep:=0]
+for(q in query){
+  print(paste(q,match(q,query)))
+  keep_tweet=grep(q,df$hashtags)
+  df[keep_tweet,keep:=1]
+}
+df=df[keep==1]
+df=df[,.(user_id,screen_name,friends_count,followers_count,account_created_at)]
 
 #get users with highest number of friend count
 tmp=df[,max(friends_count),by=screen_name]
