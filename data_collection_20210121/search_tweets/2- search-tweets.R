@@ -7,10 +7,10 @@
 
 # 0. prep work
 #set query division (1,2,3 or 4)
-division=3
+division=6
 
 #set app
-apps=c('meltemodabas001','modabas001')
+apps=c('meltemodabas001')
 app=1 #which app?
 
 #set folder locations
@@ -86,6 +86,11 @@ twitter_token <- create_token(
 #5. collect tweets
 
 #set parameters
+
+#new parameter
+since='2021-02-01'
+
+
 q=query
 n_search <- 18000
 rt <- FALSE #do not include retweets in our search
@@ -99,18 +104,21 @@ parameters = data.frame(parameter=c('query',
                                     'n_search',
                                     'rt',
                                     'maxid',
-                                    'round_total'),
+                                    'round_total',
+                                    'since'),
                         value= c(q,
                                  n_search,
                                  rt,
                                  tmp_maxid,
-                                 round_total))
+                                 round_total,
+                                 since))
 write_csv(parameters, file = file.path(loc_export_sub,"parameters.csv"))
 
 meltem_search_tweets(q=q,rt=rt,
                      n_search=n_search,maxid=maxid,
                      round_total=round_total,
-                     loc_export=loc_export_sub)
+                     loc_export=loc_export_sub,
+                     since=since)
 
 
 
