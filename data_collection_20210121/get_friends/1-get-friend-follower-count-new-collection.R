@@ -17,7 +17,7 @@ file_dates=file_dates[!is.na(file_dates)]
 cutoff= file_dates %in% list.files(file.path(bucket,loc_export))
 cutoff = max(file_dates[cutoff])
 if(!is.na(cutoff)){
-  file_dates = file_dates[which(file_dates)>cutoff]
+  file_dates = file_dates[which(file_dates>cutoff)]
 }
 
 files=paste0(file_dates,'-merged.csv')
