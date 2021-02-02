@@ -24,7 +24,7 @@ library(tidyverse)
 library(stringr)
 library(data.table)
 
-subfolders=sprintf('%02d',c(1:3))
+subfolders=dir(file.path(bucket,loc_import,date))
 
 datalist=list()
 a=1
@@ -35,7 +35,10 @@ for(s in subfolders){
   files=files[-remove]
   for (f in files){
     datalist[[a]]=fread(file.path(bucket,loc_import,date,s,f))
-    datalist[[a]]$quoted_created_at=as.POSIXct(datalist[[a]]$quoted_created_at)
+    datalist[[a]]$quoted_created_at=as.character(datalist[[a]]$quoted_created_at)
+    datalist[[a]]$user_id=as.integer64(datalist[[a]]$user_id)
+    datalist[[a]]$status_id=as.integer64(datalist[[a]]$status_id)
+    datalist[[a]]$quoted_user_id=as.integer64(datalist[[a]]$quoted_user_id)
     a=a+1
   }
 }
