@@ -17,12 +17,6 @@ loc_function='functions'
 loc_import= 'data/search_tweets_20210121/get_friends'
 loc_export= 'data/search_tweets_20210121/get_friends'
 
-#create subfolder to save
-date=str_extract(files,'[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
-date=max(date)
-loc_export_sub=file.path(bucket,loc_export,date)
-if(dir.exists(loc_export_sub)==FALSE){dir.create(loc_export_sub)}
-
 #load libraries
 library(tidyverse)
 library(data.table)
@@ -38,6 +32,12 @@ n_apps=length(apps)
 files=list.files(file.path(bucket,loc_import))
 files=files[grep('friend-count-list-',files)]
 files=files[files!='friend-count-list-2021-01-07.csv']
+
+#create subfolder to save
+date=str_extract(files,'[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+date=max(date)
+loc_export_sub=file.path(bucket,loc_export,date)
+if(dir.exists(loc_export_sub)==FALSE){dir.create(loc_export_sub)}
 
 datalist=list()
 a=1
@@ -56,10 +56,6 @@ tmp=merge(tmp,tmp2)
 tmp3=unique(df[,.(user_id,screen_name,account_created_at)])
 df=merge(tmp,tmp3)
 rm(tmp,tmp2,tmp3)
-
-#divide the data into two: people with less than 4K friends, and others
-df1=df[followers_count<4000]
-df2=df[followers_count>=4000]
 
 
 #authenticate
@@ -80,7 +76,7 @@ rate_limit_stop=function(check='get_friends'){
   if(rate_limit(check)$remaining==0){ #if this is true
     print(paste('Rate Limit:',round(rate_limit(check)$remaining,2)))
     print(paste('Rate Limit Reset in:',round(rate_limit(check)$reset,2),'minutes'))
-    sleep_for=round(rate_limit(check)$reset,2)+1
+    sleep_for=round(rate_limit(check)$reset,2)+.1
     print(paste('Sleeping for',sleep_for,' minutes.'))
     Sys.sleep(60*sleep_for)
     print(paste('Rate Limit:',round(rate_limit(check)$remaining,2)))
@@ -89,7 +85,7 @@ rate_limit_stop=function(check='get_friends'){
 }
 
 #collect data function
-retrieve_get_followers-function(data){
+retrieve_get_followers=function(data){
   datalist=list()
   rm(df)
   for(i in 1:nrow(data)){
@@ -127,58 +123,19 @@ retrieve_get_followers-function(data){
   result
 }
 
-#collect data for people with less than 4K friends
-datalist=list()
-collect=0
-count=0
-for(i in 1:nrow(df1)){
-  #check the total collected friends
-  collect=collect+df1$followers_count[i]
-  #check the total users collected
-  count=count+1
-  if(collect>14500 | rate_limit("get_followers")$remaining==0){ #if this is true
-    
-    collect=df1$followers_count[i] #reset the values
-    count=1                       #reset the values
-    print(paste('Rate Limit:',round(rate_limit("get_followers")$remaining,2)))
-    print(paste('Rate Limit Reset in:',round(rate_limit("get_followers")$reset,2),'minutes'))
-    print('Sleeping for 15 minutes.')
-    Sys.sleep(60*15.2)
-    print(paste('Rate Limit:',round(rate_limit("get_followers")$remaining,2)))
-    print(paste('Rate Limit Reset in:',round(rate_limit("get_followers")$reset,2),'minutes'))
-  }
-  user=df1$screen_name[i] #set the username
-  datalist[[i]]=get_followers(user) #collect friends
-  print(paste('Followers list for',user,'is collected.', i,'out of', nrow(df1),'. Appname:',key$appname[1]))
-  print(paste('Count',count))
-  print(paste('Collect list for',collect))
-}
-
-#add usernames
-for(i in 1:length(datalist)){
-  datalist[[i]]=datalist[[i]]%>%
-    mutate(user=df1$screen_name[i])
-}
-
-df=rbindlist(datalist)
-
-filename=file.path(loc_export_sub,paste0("user-followers-upto-5K-",date,".csv"))
-fwrite(df,filename)
-
 
 #collect data for people with more than 4K followers
 datalist=list()
-rm(df)
-for(i in 1:nrow(df2)){
+for(i in 1:nrow(df)){
   #rate limit check (stop if rate limit for get_followers is zero)
   rate_limit_stop(check='get_followers')
-  user=df2$screen_name[i] #set the username
-  print(paste(user,',page 1.', i,'out of', nrow(df2),'. Appname:',key$appname[1]))
+  user=df$screen_name[i] #set the username
+  print(paste(user,',page 1.', i,'out of', nrow(df),'. Appname:',key$appname[1]))
   tmplist=list()
   tmplist[[1]]=get_followers(user)
   if(length(tmplist[[1]])!=0){ #if data is available for the user
     nc=as.integer64(next_cursor(tmplist[[1]]))
-    number=ceiling(df2$followers_count[i]/5000)+10 #get loop number based on # followers available on df, add 10 to be safe
+    number=ceiling(df$followers_count[i]/5000)+10 #get loop number based on # followers available on df, add 10 to be safe
     for(j in 2:number){
       if(nc==0){next}else{
         #rate limit check (stop if rate limit for get_followers is zero)
@@ -192,16 +149,18 @@ for(i in 1:nrow(df2)){
   }
   tmp=rbindlist(tmplist) #bind the data for user i
   datalist[[i]]=tmp #add to the full datalist
-  print(paste('Follower list for',user,'is collected.', i,'out of', nrow(df2),'. Appname:',key$appname[1]))
+  datalist[[i]]$collected_on=Sys.time() #add info on the date and time this info was collected
+  print(paste('Follower list for',user,'is collected.', i,'out of', nrow(df),'. Appname:',key$appname[1]))
 }
 
 #add usernames
 for(i in 1:length(datalist)){
   datalist[[i]]=datalist[[i]]%>%
-    mutate(user=df1$screen_name[i])
+    mutate(user=df$screen_name[i])
 }
 
 result=rbindlist(datalist)
 
-filename=file.path(loc_export_sub,paste0("user-followers-more-than-5K-",date,".csv"))
+filename=file.path(loc_export_sub,paste0("user-followers-more-than-5K-",date,".csv")) #CHANGE THIS ONCE DONE
 fwrite(result,filename)
+
