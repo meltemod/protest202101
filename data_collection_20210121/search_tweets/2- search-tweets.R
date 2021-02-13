@@ -7,10 +7,10 @@
 
 # 0. prep work
 #set query division (1,2,3 or 4)
-division=1
+division=3
 
 #set app
-apps=c('meltemodabas001')
+apps=c('meltemodabas001','meltemsapp')
 app=1 #which app?
 
 #set folder locations
