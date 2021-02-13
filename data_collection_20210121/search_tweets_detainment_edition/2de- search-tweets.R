@@ -14,8 +14,8 @@ apps=c('meltemodabas001')
 app=1 #which app?
 
 #set folder locations
-loc_import='data/search_tweets_20210121'
-loc_export='data/search_tweets_20210121'
+loc_import='data/search_tweets_20210121_de'
+loc_export='data/search_tweets_20210121_de'
 
 computers=c('home_desktop','carbonate')
 co=1 #which computer?
@@ -88,8 +88,8 @@ twitter_token <- create_token(
 #set parameters
 
 #new parameter
-since='2021-02-04'
-until='2021-02-12'
+since=NULL
+until='2021-02-07'
 
 
 q=query

@@ -126,9 +126,10 @@ retrieve_get_friends=function(data){
 
 #collect data 
 datalist=list()
-for(i in 1:nrow(df)){
+#for(i in 1:nrow(df)){
+for(i in 5866:nrow(df)){  
   #rate limit check
-  rate_limit_stop(check='get_friends')
+  rate_limit_stop()
   #
   user=df$screen_name[i] #set the username
   print(paste(user,',page 1.', i,'out of', nrow(df),'. Appname:',key$appname[1]))
@@ -144,7 +145,7 @@ for(i in 1:nrow(df)){
     for(j in 2:number){
       if(nc==0){next}else{
         #rate limit check
-        rate_limit_stop(check='get_friends')
+        rate_limit_stop()
         #get data for the subsequent pages
         print(paste(user,'page',j))
         tmplist[[j]]=get_friends(user,page=nc)
@@ -159,7 +160,7 @@ for(i in 1:nrow(df)){
 }
 
 
-result=rbindlist(datalist)
+result=rbindlist(datalist,fill=TRUE)
 
 filename=file.path(loc_export_sub,paste0("user-friends-",date,".csv"))
 fwrite(result,filename)

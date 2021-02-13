@@ -53,13 +53,17 @@ query= c('KayyumRektörİstemiyoruz',        #most popular
          "BoğaziçiSusmayacak",             #added on 29 Jan, people share their concerns as a response to detentions
          "BoğaziçiTeslimolmayacak",        #added on 29 Jan, people share their concerns as a response to detentions
          "BundanSonrasıBizde",             #added on 31 Jan, people share their concerns as a response to the arrest of two LGBTQI+ students
-         "#BoğaziçiAblukada",              #added on 1 Feb, hashtag refers to police presence around the campus
-         "#AşağıBakmayacağız")             #added on 1 Feb, hashtag refers to police presence around the campus
-
-
+         "BoğaziçiAblukada",              #added on 1 Feb, hashtag refers to police presence around the campus
+         "AşağıBakmayacağız",             #added on 1 Feb, hashtag refers to police presence around the campus
+         "Arkadaşlarımızıİstiyoruz",      #added on 3 Feb, requestıng the release of detained friends
+         "Öğrencilerimiziİstiyoruz",      #added on 3 Feb, requestıng the release of detained students
+         "iStand4Bogazici",               #added on 12 Feb, graduate student solidarity (in eng)
+         "BoğaziçiBenim")                 #added on 12 Feb, graduate student solidarity (in tr)
+         
 query_date=c(
-  rep('2020-01-21',10),'2020-01-24','2020-01-26',
-  '2020-01-29','2020-01-29','2020-01-31','2020-02-01','2020-02-01'
+  rep('2020-01-21',10),'2020-01-24','2020-01-26s',
+  '2020-01-29','2020-01-29','2020-01-31','2020-02-01','2020-02-01','2020-02-03','2020-02-03',
+  '2020-02-12','2020-02-12'
 )
 
 #write hahstag list

@@ -126,9 +126,10 @@ retrieve_get_followers=function(data){
 
 #collect data for people with more than 4K followers
 datalist=list()
-for(i in 1:nrow(df)){
+for(i in 3526:nrow(df)){
   #rate limit check (stop if rate limit for get_followers is zero)
   rate_limit_stop(check='get_followers')
+  
   user=df$screen_name[i] #set the username
   print(paste(user,',page 1.', i,'out of', nrow(df),'. Appname:',key$appname[1]))
   tmplist=list()
@@ -140,6 +141,7 @@ for(i in 1:nrow(df)){
       if(nc==0){next}else{
         #rate limit check (stop if rate limit for get_followers is zero)
         rate_limit_stop(check='get_followers')
+        
         #get data for the subsequent pages
         print(paste(user,'page',j))
         tmplist[[j]]=get_followers(user,page=nc)
